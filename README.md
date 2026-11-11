@@ -1,3 +1,19 @@
+images: 
+<img width="1919" height="1008" alt="image" src="https://github.com/user-attachments/assets/6ec03029-9f0c-47d7-bf28-121abeff449a" />
+<img width="1919" height="998" alt="image" src="https://github.com/user-attachments/assets/7ab05f39-0ffe-437b-a95f-0228cdfe2d42" />
+<img width="1919" height="1007" alt="image" src="https://github.com/user-attachments/assets/8762bab5-72e5-4280-86c6-75b80d8c9d8a" />
+<img width="1917" height="1007" alt="image" src="https://github.com/user-attachments/assets/b72a9d36-c44d-448e-82ff-aff78f62dcc1" />
+<img width="1919" height="1009" alt="image" src="https://github.com/user-attachments/assets/d5ef662e-095f-452e-88d1-79fda361709e" />
+<img width="1917" height="1006" alt="image" src="https://github.com/user-attachments/assets/ceab8a4b-3a2e-4e3a-a629-ec7ecd15ec34" />
+<img width="1918" height="1012" alt="image" src="https://github.com/user-attachments/assets/564fb8e6-5d8c-495f-a07b-e07dd7e3abb0" />
+<img width="1914" height="1012" alt="image" src="https://github.com/user-attachments/assets/6abb3d2f-c654-4127-9b0d-399ab160a7e5" />
+
+
+
+
+
+
+
 # Meteor Reskin — Release 1 (2.0.0)
 
 **BY Cloudy_City** · Minecraft **26.3** · Meteor Client **26.3-17** · client-side only
