@@ -1,122 +1,75 @@
-# Meteor Reskin
+# Meteor Reskin — Release 1 (2.0.0)
 
-**BY Cloudy_City** · **1.1.0-beta.1** · Minecraft **26.3** · Meteor Client **26.3-17**
+**BY Cloudy_City** · Minecraft **26.3** · Meteor Client **26.3-17** · client-side only
 
-Four distinct menu layouts in one client-side Meteor addon. This is a UI-only project: it adds no gameplay modules, packet hooks, automation, commands, or replacement gameplay implementations. Existing module switches and settings call the existing Meteor instances.
+Eight selectable UI workspaces for Meteor: Obsidian Command, Aurora Glass, Neon Dock, Slate Sidebar, Apex Workspace, Horizon Split, Atlas Panels, and Prism Studio. Existing module settings and callbacks remain Meteor's; Reskin does not register gameplay modules or change pathing, networking, combat, or movement behavior.
 
-## The four layouts
+## Install / upgrade
 
-| Layout | Structure |
-| --- | --- |
-| **Obsidian Command** | Category rail, grouped module list, and a contextual settings inspector. |
-| **Neon Dock** | Bottom navigation dock, paged category panels, independent scrolling, and purple accent styling. |
-| **Slate Sidebar** | Left-side navigation, category list, module list, and a wider settings inspector. |
-| **Apex Workspace** | Adaptive module-card grid, category explorer, actual module/enabled/favorite counts, and a settings inspector. |
+Close Minecraft. Remove earlier Meteor Reskin or Carbon Columns JARs, then extract `meteor-reskin-26.3-17-2.0.0.jar` from the install ZIP into the same instance's `mods` folder. Keep your existing Meteor and Fabric API. Do not delete configuration, profiles, or activation flags. Only one Reskin version should be installed.
 
-On small viewports, the inspector is replaced by the full native settings screen and categories remain reachable through the **Categories** button. The layout changes; module behavior does not.
+Open **Appearance → Icons** for artwork options, the installed-category preview list, and **Reload icon providers**. Native supplied artwork is enabled by default. An explicitly saved preference to disable supplied icons is retained; enable **Use provided category artwork** to restore native artwork.
 
-The earlier 1.0.0 prototype primarily changed palettes. This revision replaces its module workspace and navigation with the four structures above. It is not a pixel-perfect transcription of the concept art. Illustrative live previews, simulated graphs and invented module controls from that art are not shipped.
+## Release 1 icons
 
-## Install
+- Meteor/addon category icons are used automatically, without integrations or name allowlists. Explicit registrations can override a category deliberately.
+- Native item icons now use Meteor's clipped post-render stage. The previous immediate submission could be covered by panel geometry.
+- Addon modules inherit their category artwork unless an explicit per-module icon is registered. Recognized built-in Meteor modules can use distinct original semantic symbols; this is independently configurable.
+- The original vector library contains 58 symbols for navigation, actions, categories and modules. Unknown/missing artwork uses a visible addon symbol instead of a blank square or unreadably small initials.
+- Positive/empty results are cached briefly. Delayed suppliers recover automatically. Supplier and synchronous item-submission exceptions use a rate-limited fallback. Reloading the icon cache does not delete registrations or settings.
+- Suppliers and registrations are keyed by object identity, so equal category names from different objects do not collide.
+- Optional integrations support native item artwork, Meteor-packed textures and original vector symbols. See `docs/ICON-API.md`.
 
-1. Close Minecraft.
-2. Remove older **Meteor Reskin** and **Carbon Columns** JARs from the instance's `mods` folder. Do not leave both installed; the metadata explicitly rejects Carbon Columns to prevent duplicate UI registrations.
-3. Extract the release ZIP and put its single `meteor-reskin-26.3-17-1.1.0-beta.1.jar` in `mods`.
-4. Retain Meteor Client `26.3-17`, the Fabric loader, and the Fabric API already used by the instance.
-5. Restart. On first installation the theme is selected after Meteor restores GUI configuration. If another theme is deliberately selected later, it is not forcibly replaced on subsequent starts. Select **Meteor Reskin** in Meteor's GUI theme selection to return to it.
+The supplied artwork is not recolored. Vector symbols use the active palette. Textured integrations explicitly choose whether their texture is tinted.
 
-Do not delete profiles, module settings, or the Meteor configuration folder. No gameplay configuration migration is performed.
+## Release cleanup
 
-The runtime requires **Java 25** and Fabric Loader **0.19.5 or later**, as declared in the addon metadata. The addon is pinned to Meteor `26.3-17`; an arbitrary later build is not certified.
+The runtime version is **2.0.0**, without a beta/prerelease suffix. The bottom help/status text is absent. Panels, Pin category and the cross-tab overlay remain removed. Navigation shows **METEOR RESKIN / BY Cloudy_City**, not the selected skin name. The author metadata also supplies Meteor's ordinary title-screen addon credit. Skin names remain in Appearance where they identify choices.
 
-## Use and customize
+The corrected settings scrolling, null/empty-table handling, measured numeric widths, staged color editing, initial search focus, forgiving search, square-first chrome, eight layouts and compatibility isolation are retained.
 
-Open **Appearance** in Reskin navigation and choose one of the four named buttons. An explicit style-button selection applies that style's default palette while retaining density, motion preferences and the category-column limit. Colors can then be customized. Loading saved settings does not reapply a palette or erase custom colors.
+## Verification and limits
 
-The Appearance workspace includes accent, surface, header, text, secondary text, title text, border, hexadecimal RGBA editing, native color pickers, density, corner radius, Minecraft GUI-scale following, reduced motion, icon preference, Neon accent halo, and the cross-tab panel toggle. Use the regular Meteor GUI settings for its existing font controls.
+The release passes the isolated regression suite at two font-metric profiles, including the exact icon-submission and blank-form regressions. The tests use actual Meteor `Category`, `WItem`, widget lifecycle, settings and color implementation bytecode where documented, with controlled game services and draw submission. The optional Baritone audit checks 34 direct binary references against the supplied `baritone-meteor-26.3.jar`.
 
-- **Module name/body:** inspect the module; on compact layouts and Neon Dock, open its native settings screen.
-- **Switch on the right:** call that module's native toggle once.
-- **Star on the left:** change its existing favorite flag.
-- **Right click:** open the full native module screen.
-- **Full settings:** access native keybinds, config sharing and addon-specific custom controls; they are not approximated by substitute gameplay settings.
-- **Panels:** open or close the existing-category shelf on other tabs. The arrows change the shown category; **Pin category** picks the inspected module's category.
-- **Search:** searches module names, descriptions and setting titles. All / Favorites / Enabled filter the existing registry.
+**No complete Minecraft 26.3 / Java 25 / GPU session was run for this release.** Native item models, resource packs and the full addon collection have not been end-to-end tested here. Baritone was inspected and statically audited, not run. The source includes `TEST-REPORT.md`, the exact provenance, and a runtime checklist. Software previews are not Minecraft screenshots.
 
-Labels use clipped hover scrolling. Reduced motion substitutes stationary text and a full-text tooltip. Long tooltip text wraps, including unbroken identifiers; exceptionally tall tooltips scroll automatically when reduced motion is off. Content scrollbars occupy reserved space instead of covering controls.
+These workspaces follow the approved layout directions, not pixel-perfect concept imagery. They do not include GPU background blur, live world-preview scenes or freeform window docking.
 
-## Addon categories and icons
+## Build
 
-Categories and navigation tabs are enumerated from Meteor's registered instances. There is no hardcoded six-category restriction. An addon category's `Supplier<ItemStack>` icon is used when enabled and valid. Missing suppliers, null results, empty item stacks or throwing suppliers fall back to readable initials. Broken icon suppliers are cached as unavailable to avoid per-frame exceptions. Category navigation remains usable regardless of icon availability.
-
-Meteor's base Module API does **not** have a universal module-icon member. Modules normally inherit their category icon. A presentation addon can opt into the small API below on the client thread:
-
-```java
-ReskinIcons.registerModuleIcon(existingModule, module -> itemStack);
-// Remove a provider:
-ReskinIcons.registerModuleIcon(existingModule, null);
-// Refresh late-created category icons:
-ReskinIcons.invalidateCategoryIcons();
-```
-
-Third-party icons stored in an unrelated private API are not automatically guessed or extracted. Third-party screens that bypass Meteor's theme/widget system may retain their own rendering.
-
-## Branding
-
-The addon name and theme name are **Meteor Reskin**. Its navigation header reads **METEOR RESKIN / BY Cloudy_City**. The metadata author is `Cloudy_City`, which Meteor can display in its existing title-screen addon-credit list when that list is enabled. No fictional repository URL or update endpoint is embedded.
-
-## Build from source
-
-The canonical, dependency-light build uses Python 3 and a **JDK 25** installation on PATH:
+Python 3.10+ and JDK 25 are recommended. Supply the exact Meteor JAR listed in `dependencies.lock.json`:
 
 ```sh
 python build.py --meteor /path/to/meteor-client-26.3-17.jar
 ```
 
-Output: `dist/meteor-reskin-26.3-17-1.1.0-beta.1.jar`.
-
-For compilation against a real mapped Minecraft client artifact rather than the six minimal compile headers:
+A mapped Minecraft client JAR can replace the compile-only game headers:
 
 ```sh
 python build.py --meteor /path/to/meteor-client-26.3-17.jar --minecraft /path/to/minecraft-26.3-client.jar
 ```
 
-The compile headers under `stubs/` are never packaged. The JAR contains only this project's classes, metadata and GPL license. Minecraft, Meteor, Fabric API, fonts and other third-party binaries are not redistributed here.
-
-### Exact build provenance for this supplied binary
-
-The available build environment had JDK 21, no Minecraft runtime, and could not resolve the JDK download host. The supplied binary was therefore built using the explicit offline tooling mode also used in the working 3.0.1 lineage:
+The compiler available for this delivery was JDK 21. The explicit offline build was:
 
 ```sh
 python build.py --meteor /path/to/meteor-client-26.3-17.jar --offline-java21-api-view
 ```
 
-This creates a private compiler-view copy of the supplied Meteor JAR with Java 21 class-version headers. It does **not** alter the original artifact or include that copy in the release. No dependency method bytecode is patched. Addon classes target Java 21; the actual Minecraft runtime requirement stays Java 25. This workaround is not evidence of an in-game Java 25 test. Prefer a normal JDK 25 rebuild for a public release candidate.
+That opt-in tool creates a separate class-header compatibility view for the older compiler. It does not change the original dependency, emulate Java 25, or run Minecraft. Addon bytecode targets Java 21, while the Minecraft runtime still requires Java 25. Dependency copies and compile-only headers are never packaged into the addon.
 
-`build/build-info.json` records the compiler, adapter use and SHA-256 values. `dependencies.lock.json` records the exact reference artifact hashes.
+Output: `dist/meteor-reskin-26.3-17-2.0.0.jar`.
 
 ## Tests
 
 ```sh
-python tests/run.py --meteor /path/to/meteor-client-26.3-17.jar
-# Only for JDK 21 tooling:
 python tests/run.py --meteor /path/to/meteor-client-26.3-17.jar --offline-java21-api-view
+python tests/run.py --meteor /path/to/meteor-client-26.3-17.jar --offline-java21-api-view --font-size 22
+python tests/audit_baritone.py --meteor /path/to/meteor-client-26.3-17.jar --baritone /path/to/baritone-meteor-26.3.jar --out test-results/baritone-api-audit.json
 ```
 
-See **TEST-REPORT.md** for what passed and what was not tested. The source includes the harness and its results. `test-results/previews/` contains software widget renders produced by production UI code with substitute fonts/drawing and fixture module data. These are explicitly marked and are **not Minecraft screenshots**.
+Under JDK 25 omit the adapter flag. Optional `--icon-baseline` accepts the preflight JAR to reproduce the immediate item submission. `--scroll-baseline` / `--numeric-baseline` accept Beta 3, and `--table-baseline` accepts Beta 2. Baseline JARs are not redistributed.
 
-## GitHub publication
+## Public source distribution
 
-Extract this source ZIP into the repository root; keep `src`, `tests`, `stubs`, `build.py`, the license and notices. Do not commit your `mods` folder, user logs or private game configuration. `.gitignore` excludes build outputs, archives and dependency JARs.
-
-A manually triggered `.github/workflows/build.yml` is included. Supply a public HTTPS URL for the exact Meteor reference artifact when running it. It verifies SHA-256 before building with JDK 25, runs the headless tests and uploads the compiled JAR as an Actions artifact. No URL is fabricated and nothing is published automatically. The workflow has not been executed in GitHub from this environment.
-
-## Known limits and release status
-
-This is a **beta**, not a flawless or fully certified release. No full Minecraft 26.3 / Java 25 / GPU session was available for this revision. Native GPU text/texture rendering, actual DPI behavior, all 33 native setting types and the user's complete installed addon set still need in-game acceptance testing. The headless settings-to-widget converter is a test double; the production addon delegates to Meteor's real factory.
-
-Standard Meteor theme-based pages share the new controls and palette. This is not a replacement of every vanilla Minecraft screen, every HUD editor overlay, or arbitrary custom-rendered addon screens. No live per-module world preview or performance chart is claimed. The native full module editor is deliberately retained for complete addon control coverage.
-
-## License
-
-GPL-3.0-only. See `LICENSE` and `NOTICE.md`.
+GPL-3.0-only; see `LICENSE` and `NOTICE.md`. The source contains build/test tooling, compile-only headers, documentation and original icon assets. It contains no dependency/game JARs, fonts, user logs, credentials or private account information. The install ZIP contains one addon JAR. A manually triggered JDK 25 GitHub workflow is provided but has not been run here. No repository URL or claim of official Meteor endorsement is invented.

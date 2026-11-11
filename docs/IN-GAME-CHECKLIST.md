@@ -1,12 +1,20 @@
-# In-game acceptance checklist — not yet completed here
+# Release 1 runtime checklist
 
-Use a backup copy of a Prism instance. Install exactly one Reskin JAR, retain Meteor 26.3-17 and the instance's Fabric dependencies, and run Java 25.
+Version: Meteor Reskin 2.0.0 / Minecraft 26.3 / Meteor 26.3-17 / Java 25.
 
-1. Open each layout from Appearance. Confirm the title-screen addon credit and menu header author. Restart after customizing colors and confirm persistence.
-2. Open every registered tab, including addon tabs. Test navigation arrows at the smallest supported window and the bottom/side bars in Neon/Slate.
-3. Test all category pages with the complete addon set, with category icons enabled and disabled. Check long names and a category with no icon.
-4. In every layout, inspect a module without toggling it, use its switch once, favorite it, right-click it and open the full native settings editor. Verify existing custom addon controls.
-5. Exercise booleans, numbers, sliders, enums, colors, lists, files, vectors, keybinds, conditional settings and custom setting factories. Test nested scrolling and dropdowns near each edge.
-6. Resize while the GUI is open; switch windowed/fullscreen and GUI Scale values including Auto. Confirm pointer hitboxes and clipping agree with rendered controls.
-7. Open Panels on Config, GUI, HUD, Friends, Macros, Profiles and addon tabs. Change its categories and close it without triggering the underlying page.
-8. Inspect the game log for errors. Record actual native-font, texture and GPU behavior; do not substitute headless fixture screenshots as proof of these checks.
+The preflight's spacing and blank-form corrections were reported working by the user. The new Release 1 icon path has isolated regression coverage but has not been launched inside Minecraft here. These checklist rows are not marked as passed by software tests.
+
+| Area | Runtime checks | Release 1 in-game status here |
+| --- | --- | --- |
+| Category artwork | Check core and addon-provided icons in all eight skins, scrolling, resource reload and scale changes | Not run |
+| Icons studio | Native-art toggle, native-module symbol toggle, reload providers, absent icons | Not run |
+| Config / GUI / HUD | Scroll to both endpoints, collapse first/middle groups, conditional visibility, resize | Not run |
+| Friends / Macros / Profiles | Empty and populated lists, editors, binding capture, return navigation | Not run |
+| Accounts / Proxies | Empty/populated lists, add/edit/remove without sharing credentials | Not run |
+| Baritone | Actual addon settings, nested lists/selectors, scrolling and return paths | Static interface audited; runtime not run |
+| Module settings | Numeric typing, sliders, resets, colors, lists, keybinds, custom widgets | Not run |
+| Custom proxy-list addon | Original failing menu, empty rows, add/edit/remove and scrolling | Shared table regression passed; full addon not run |
+
+For every menu: wheel down/up, drag scrollbar, collapse a group above the viewport, change a setting which hides controls, resize, close/reopen. Verify clipped controls do not respond to clicks and focus stays reachable. No gameplay automation or proxy connection needs to be enabled to inspect menus.
+
+Stable chrome: no Panels/Pin category, no skin-name filler in the navigation header, no bottom help/status footer; brand and author credit remain. Keep configuration and profiles. Report version, addon filename and GUI/font scale with any failure; do not include access tokens or account credentials.

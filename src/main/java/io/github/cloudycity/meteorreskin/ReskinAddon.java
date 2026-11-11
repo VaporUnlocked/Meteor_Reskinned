@@ -17,7 +17,7 @@ public final class ReskinAddon extends MeteorAddon {
     @Override
     public void onInitialize() {
         GuiThemes.add(new ReskinTheme());
-        System.out.println("[Meteor Reskin] 1.1.0-beta.1 registered UI theme; waiting for Meteor GUI configuration to load.");
+        System.out.println("[Meteor Reskin] " + ReskinBuild.VERSION + " registered UI theme; waiting for Meteor GUI configuration to load.");
     }
 
     @PostInit

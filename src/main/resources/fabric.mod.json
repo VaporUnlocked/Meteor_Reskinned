@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "id": "meteor-reskin",
-  "version": "1.1.0-beta.1",
+  "version": "2.0.0",
   "name": "Meteor Reskin",
-  "description": "Four UI-only layouts for Meteor 26.3-17: Obsidian Command, Neon Dock, Slate Sidebar and Apex Workspace. BY Cloudy_City.",
+  "description": "Meteor Reskin \u2014 Release 1. Eight UI-only workspaces, native addon category artwork, extensible icons and corrected scrolling for Meteor Client 26.3-17. BY Cloudy_City.",
   "environment": "client",
   "authors": [
     "Cloudy_City"
@@ -22,5 +22,6 @@
   },
   "breaks": {
     "carbon-columns": "*"
-  }
+  },
+  "icon": "assets/meteor-reskin/icon.png"
 }

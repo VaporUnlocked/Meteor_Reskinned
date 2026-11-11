@@ -1,54 +1,54 @@
-# Meteor Reskin 1.1.0-beta.1 — validation report
+# Meteor Reskin — Release 1 (2.0.0) validation
 
-## Result
+## What changed
 
-The supplied binary compiled successfully and passed **20,530 assertions/checks** in the isolated regression harness. This is not a claim that every Minecraft UI interaction or third-party addon was tested.
+Native supplied item icons now use `GuiRenderer.post` inside their owning scissor, as Meteor's `WItem` does. The shipped preflight binary was tested first: it submitted one immediate item and zero deferred items. The release submitted zero immediate items and one deferred item after panel geometry. This verifies the scheduling correction, not Minecraft item-model pixels.
+
+## Executed checks
 
 | Area | Result |
 | --- | --- |
-| Production theme constructor and real Meteor setting builders | Passed |
-| Four layout construction and software rendering paths | Passed |
-| Layout matrix | 96 combinations: four layouts × six viewport sizes × four GUI-scale inputs |
-| Viewports | 640×360, 854×480, 1280×720, 1666×896, 1920×1080, 3840×2160 |
-| Every Neon category page, Appearance, shared panels | Passed across the matrix |
-| Navigation | Ten registered tabs, including an addon tab, plus Appearance and Panels in all four layouts at 854×480 |
-| Module interaction routing | Selecting does not toggle; switch calls existing toggle once; favorite/search/empty states and clipped clicks passed |
-| Addon icons | Supplied, missing, null/empty, throwing, cached, Unicode-initial fallbacks passed |
-| Dropdowns | 60 options; upward edge placement, horizontal containment, last option selection passed |
-| Two-axis native-content viewport | Both axes reachable; scrollbar does not activate covered inputs; new focus reveals hidden field |
-| Tooltip | Long identifiers, multiline wrapping, first-placement containment, reduced motion passed |
-| Settings serialization | Real Meteor Settings/Setting round trip using in-memory NBT fixtures; selected style, custom colors, opacity and density retained |
-| Binary API check | 810 addon/Meteor member references resolved against the unchanged original Meteor artifact |
-| Runtime archive | 36 addon classes; zero dependency/test/compile-header classes packaged |
+| Actual Category and WItem classes | Loaded from the supplied Meteor dependency, not test substitutes |
+| Original icon-submission regression | Reproduced against preflight; replacement passes |
+| Icon placement matrix | 96 cases: 8 skins × 3 scale values × 4 icon slots; deferred submission and intersected nested clips |
+| Icon resolution | Supplied native art, explicit item/vector/texture overrides, null/empty, equal-name identity isolation, native-module semantics |
+| Icon recovery | Empty-at-start becomes valid, changing providers, mutated-to-empty items, thrown suppliers, queued item failures, fresh-stack allocation cooldown |
+| Vector library | 58 symbols × 5 sizes = 290 finite/front-facing geometry checks |
+| Icons studio | Category catalog and options constructed/rendered/navigated across all 8 skins |
+| Existing layout matrix | 192 combinations: 8 skins × 6 window sizes × 4 GUI-scale inputs |
+| Saved scale/density cases | 96 cases at 1920×1009 |
+| Blank-menu regression | No blank viewport after the original 80-step wheel sequence |
+| Native menu component stress | 240 structure cases; 17,217 frames per font profile |
+| Table compatibility | 110 checks including empty/cleared/trailing rows and native-view ownership |
+| Stable chrome | Actual stable binary omits footer; no Panels, overlay or skin-name header filler |
+| Other retained regressions | Navigation, settings-first layout, numeric width, color drafts, search, focus, scroll endpoints, click isolation and triangle winding |
+| Two font profiles | Comfortaa Java2D metrics at 18.6666666667 and 22 logical pixels; both passed |
+| Addon/Meteor member check | 1334 references resolved against original Meteor and output addon |
+| Baritone interface audit | 34 direct references resolved against the supplied exact Baritone artifact; no runtime execution |
+| Runtime archive | 68 own classes; no dependency/stub/test/font classes or fonts packaged |
 
-The deliberately failing icon supplier is a test fixture. Its single fallback log line is expected, not a startup error from a real addon.
+The normal-profile main suite reported 27,710 checks; the separate icon suite reported 1,612. The larger profile reported 28,264 main and 1,597 icon checks. Counts vary with wrapping and visible-widget bounds; they are not counts of Minecraft sessions or unique menus.
 
-## What is real in these tests
+Expected fallback warnings come from deliberately failing test providers. They are not observed errors from the user's installed addons.
 
-Production Reskin layout, drawing, navigation, icon, dropdown, tooltip and viewport classes are loaded from the shipped JAR. Meteor's WWidget, WContainer, WWindow, Cell, WPressable, Tab, Settings, Setting and relevant setting-builder implementations come from the supplied Meteor artifact. The test's class-version adapter does not rewrite their method bytecode.
+## Scope and remaining limits
 
-## What is substituted
+**No complete Minecraft 26.3 / Java 25 / GPU session was run for this release.** Game services, data registries, portions of setting conversion, text metrics, native item models and draw submission are substituted in the harness. Category/WItem and the documented Meteor lifecycle, settings, color and table bytecode are real. Test-side deferred scheduling models the inspected per-scissor contract. Item-submission fixtures draw placeholders, not actual Minecraft models.
 
-Minecraft/GUI services, base theme services, fonts and drawing submission, data registries, settings-to-widget conversion, item stacks, color/NBT representations and the screen manager use test fixtures. Software PNGs in `test-results/previews` run the production widget drawing code but do not show Minecraft's actual font renderer, item renderer, textures, game background or GPU output. They are watermarked accordingly.
+The reference JAR inventory does not establish that every native or custom addon screen was instantiated. The supplied Baritone JAR is present and its direct interface was audited; it was not run in game. Reflective conversions, resource packs, GPU/render-pipeline details and the complete addon combination remain unverified here. No gameplay routines or proxy connections were executed. See `docs/IN-GAME-CHECKLIST.md`.
 
-The member checker does not resolve Minecraft/window/input/item methods or reflective access to the Gui screen manager. These external references are enumerated in `test-results/api-report.json`; they are not silently counted as verified Meteor methods. A Java enum ordinal reference is resolved as a standard-library method.
+## Build provenance
 
-## Build environment and limitations
-
-- Compiler available: JDK **21**. Addon bytecode target: **21**.
-- Explicit offline Meteor API-header adapter used: **True**.
-- Minimal compile-only Minecraft headers used: **True**.
-- Required actual game runtime: **Java 25 / Minecraft 26.3 / Meteor 26.3-17**.
-- **No complete Minecraft session or GPU validation was performed for this revision.**
-- **The complete user addon set and all native setting types were not runtime-tested.**
-- The manually triggered GitHub workflow is provided but was not run on GitHub here.
-
-Use `docs/IN-GAME-CHECKLIST.md` before promoting this beta to a stable public release. No guarantee of flawless operation is made.
-
-## Reference hashes
+Compiler: JDK 21. Addon bytecode target: 21. Explicit Java 21 API-header view: True. Compile-only Minecraft headers: True. Actual required game runtime: Java 25. The original dependencies are unmodified and not redistributed. The manually triggered JDK 25 GitHub workflow is provided but not executed here.
 
 Meteor SHA-256: `9767e91e773ac5dfb27fdd29e5378e1ce41007dedd432db3a4223b3affb62e7f`
 
-Release JAR SHA-256: `5051ce5b71be48f24b715d59f1bbacf2b8042a46deb62b59cf1d4926cca79d59`
+Baritone SHA-256: `8804988ac4f6c70871a174c3c90002bfcdfc485b59f96d43f4b4ec942820f2b4`
 
-See `test-results/results.txt` for the executed test output and `test-results/build-info.json` for machine-readable build provenance.
+Release JAR SHA-256: `0b11d5e6f0fc40fb10f73404c3e20abc7e9d5240f10c5d75bdb9f87cbc573977`
+
+See the executed logs and machine-readable reports in `test-results/`.
+
+## Clean-source verification
+
+The source package was extracted into a separate directory, rebuilt, and the complete normal-font regression suite rerun successfully. After refreshing the packaged notice in the original build, the install JAR and clean-source JAR matched byte-for-byte. No class entries differed during that packaging check. The final archive was extracted and rebuilt once more to verify the exact delivered package.

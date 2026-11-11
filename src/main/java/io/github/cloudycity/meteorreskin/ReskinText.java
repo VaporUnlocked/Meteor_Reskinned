@@ -16,8 +16,9 @@ final class ReskinText {
             cachedContentWidth=text==null?0:t.textWidth(text,text.length(),title);
         }
         if (maxW <= 1 || text == null || text.isEmpty()) return;
-        double contentWidth = cachedContentWidth;
-        if (contentWidth <= maxW) {
+        double contentWidth=t.textWidth(text,text.length(),title);
+        if(Math.abs(contentWidth-cachedContentWidth)>.75){hoverTime=0;distance=0;cachedContentWidth=contentWidth;}
+        if (contentWidth <= maxW + 0.75) {
             distance = 0; hoverTime = 0;
             r.text(text, x, y, c, title);
             return;
@@ -26,7 +27,7 @@ final class ReskinText {
             distance=0; hoverTime=0;
             if(hover)r.tooltip(text);
             r.scissorStart(x,y,maxW,Math.max(1,height));
-            r.text(text,x,y,c,title);
+            ReskinDraw.text(r,t,text,x,y,maxW,c,title);
             r.scissorEnd();
             return;
         }
@@ -42,6 +43,7 @@ final class ReskinText {
             else if (phase < 1.2 + span) distance = max;
             else distance = Math.max(0, max - (phase - 1.2 - span) * t.scale(36));
         }
+        if(!hover || hoverTime<=0.40){ReskinDraw.text(r,t,text,x,y,maxW,c,title);return;}
         r.scissorStart(x, y, maxW, Math.max(1,height));
         r.text(text, x - distance, y, c, title);
         r.scissorEnd();

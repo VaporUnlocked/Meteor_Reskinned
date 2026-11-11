@@ -1,0 +1,11 @@
+{
+  "minecraft": "26.3",
+  "meteor_version": "26.3-17",
+  "meteor_sha256": "9767e91e773ac5dfb27fdd29e5378e1ce41007dedd432db3a4223b3affb62e7f",
+  "fabric_api_reference": "0.166.0+26.3",
+  "fabric_api_sha256": "7d044e7ab67650257f8a3853aa1e94c6c04ed652cd150a0a88926ef71ae51a7b",
+  "note": "Binaries are external dependencies and are not included in this source or release ZIP.",
+  "baritone_reference": "26.3-SNAPSHOT",
+  "baritone_sha256": "8804988ac4f6c70871a174c3c90002bfcdfc485b59f96d43f4b4ec942820f2b4",
+  "baritone_scope": "Optional static audit; not a hard runtime dependency of Reskin"
+}

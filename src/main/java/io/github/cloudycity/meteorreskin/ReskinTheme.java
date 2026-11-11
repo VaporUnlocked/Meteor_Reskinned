@@ -30,9 +30,13 @@ import meteordevelopment.meteorclient.utils.Utils;
 public final class ReskinTheme extends MeteorGuiTheme {
     public enum StylePreset {
         OBSIDIAN_COMMAND("Obsidian Command"),
+        AURORA_GLASS("Aurora Glass"),
         NEON_DOCK("Neon Dock"),
         SLATE_SIDEBAR("Slate Sidebar"),
-        APEX_WORKSPACE("Apex Workspace");
+        APEX_WORKSPACE("Apex Workspace"),
+        HORIZON_SPLIT("Horizon Split"),
+        ATLAS_PANELS("Atlas Panels"),
+        PRISM_STUDIO("Prism Studio");
 
         public final String title;
         StylePreset(String title) { this.title = title; }
@@ -45,15 +49,21 @@ public final class ReskinTheme extends MeteorGuiTheme {
         .defaultValue(StylePreset.OBSIDIAN_COMMAND)
         .onChanged(v -> refresh())
         .build());
+    public final Setting<Boolean> referenceProportions = reskinSettings.add(new BoolSetting.Builder()
+        .name("reference-proportions").description("Keep the approved skin proportions and readable card counts even with small GUI scales. Disable for dense layouts.")
+        .defaultValue(true).onChanged(v -> refresh()).build());
     public final Setting<Boolean> useCategoryIcons = reskinSettings.add(new BoolSetting.Builder()
-        .name("addon-category-icons").description("Use addon category item icons; missing icons use readable initials.")
+        .name("addon-category-icons").description("Prefer the icons supplied by Meteor and installed addons. Missing artwork uses a vector fallback.")
+        .defaultValue(true).build());
+    public final Setting<Boolean> semanticModuleIcons = reskinSettings.add(new BoolSetting.Builder()
+        .name("distinct-native-module-icons").description("Use distinct symbols for recognized built-in Meteor modules. Addon modules inherit their real category artwork unless an icon is registered.")
         .defaultValue(true).build());
     public final Setting<Boolean> glow = reskinSettings.add(new BoolSetting.Builder()
         .name("accent-glow").description("Subtle accent halo in Neon Dock. No shader dependency.")
         .defaultValue(true).build());
     public final Setting<Integer> cornerRadius = reskinSettings.add(new IntSetting.Builder()
         .name("corner-radius").description("Panel and button corner radius.")
-        .defaultValue(8).min(0).sliderRange(0,16).onChanged(v -> refresh()).build());
+        .defaultValue(0).min(0).sliderRange(0,4).onChanged(v -> refresh()).build());
     public final Setting<Boolean> syncMinecraftScale = reskinSettings.add(new BoolSetting.Builder()
         .name("match-minecraft-gui-scale").description("Use Minecraft's effective GUI scale, including Auto.")
         .defaultValue(true).onChanged(v -> refresh()).build());
@@ -70,9 +80,6 @@ public final class ReskinTheme extends MeteorGuiTheme {
     public final Setting<Integer> maxColumns = reskinSettings.add(new IntSetting.Builder()
         .name("maximum-columns").description("Maximum number of category columns on the Modules page.")
         .defaultValue(4).min(1).sliderRange(1,8).onChanged(v -> refresh()).build());
-    public final Setting<Boolean> shelfEnabled = reskinSettings.add(new BoolSetting.Builder()
-        .name("show-columns-on-other-pages").description("Keep a quick-access module column available on every Meteor tab.")
-        .defaultValue(false).build());
     public final Setting<SettingColor> surfaceColor = reskinSettings.add(new ColorSetting.Builder()
         .name("surface").description("Panel surface color and transparency.")
         .defaultValue(new SettingColor(14,18,24,242))
@@ -85,8 +92,6 @@ public final class ReskinTheme extends MeteorGuiTheme {
         .defaultValue(new SettingColor(63,84,106,255))
         .onChanged(v -> { outlineColor.get().set(v); refresh(); }).build());
 
-    /** An overlay of existing module-category widgets, visible on other tabs when enabled. */
-    public int quickColumnIndex = 0;
     private final ReskinAppearanceTab appearanceTab = new ReskinAppearanceTab();
 
     public ReskinTheme() {
@@ -111,13 +116,30 @@ public final class ReskinTheme extends MeteorGuiTheme {
     public void chooseStyle(StylePreset preset) {
         stylePreset.set(preset);
         applyStylePreset(preset);
+        cornerRadius.set(0);
         meteordevelopment.meteorclient.gui.GuiThemes.save();
         ReskinAccess.reopenCurrent(this);
     }
-    public double navigationHeight(){return scale(62);}
-    public double topInset(){return style()==StylePreset.NEON_DOCK?scale(12):navigationHeight()+scale(12);}
-    public double bottomInset(){return style()==StylePreset.NEON_DOCK?navigationHeight()+scale(18):scale(16);}
-    public double sideInset(){return style()==StylePreset.SLATE_SIDEBAR && logicalWidth()>=scale(800)?scale(184):0;}
+    /** Structure follows the viewport; type and native controls still use Meteor's effective scale.
+     * This prevents a saved 0.75 GUI scale from doubling the card/column count. */
+    public double composition(double value) {
+        if(referenceProportions == null || !referenceProportions.get()) return scale(value);
+        double frame = Math.min(logicalWidth()/1666.0, logicalHeight()/896.0);
+        return value * Math.max(scale(1), frame);
+    }
+    public int compositionColumns(double usable, double gap, double minimum, int designMaximum) {
+        int fit=Math.max(1,(int)Math.floor((usable+gap)/(minimum+gap)));
+        return referenceProportions.get()?Math.min(fit,designMaximum):fit;
+    }
+    public double navigationHeight(){return composition(logicalWidth()<composition(1180)||style()==StylePreset.APEX_WORKSPACE?112:82);}
+    public double topInset(){return sideInset()>0?composition(28):style()==StylePreset.NEON_DOCK?composition(24):navigationHeight()+composition(28);}
+    public double bottomInset(){return style()==StylePreset.NEON_DOCK?navigationHeight()+composition(30):composition(34);}
+    public double sideInset(){
+        if((style()!=StylePreset.SLATE_SIDEBAR && style()!=StylePreset.PRISM_STUDIO)||logicalWidth()<composition(950))return 0;
+        double caption=textWidth("Appearance");
+        for(var tab:meteordevelopment.meteorclient.gui.tabs.Tabs.get())caption=Math.max(caption,textWidth(tab.name));
+        return Math.max(composition(250),Math.min(logicalWidth()*.28,Math.ceil(caption+scale(110))));
+    }
     public void saveAppearance(){meteordevelopment.meteorclient.gui.GuiThemes.save();}
 
     /** Restore only the appearance palette and leave Meteor's other configuration untouched. */
@@ -147,7 +169,11 @@ public final class ReskinTheme extends MeteorGuiTheme {
     public void applyStylePreset(StylePreset preset) {
         switch (preset) {
             case OBSIDIAN_COMMAND -> {
-                applyColors(81, 240, 220, 18, 21, 28, 28, 34, 44, 68, 96, 118);
+                applyColors(81, 224, 192, 17, 23, 25, 30, 39, 41, 69, 87, 87);
+            }
+            case AURORA_GLASS -> {
+                applyColors(96,238,221,24,36,45,40,57,65,88,120,130);
+                surfaceColor.get().a=228;
             }
             case NEON_DOCK -> {
                 applyColors(238, 76, 255, 19, 12, 28, 33, 18, 48, 140, 56, 160);
@@ -155,9 +181,10 @@ public final class ReskinTheme extends MeteorGuiTheme {
             case SLATE_SIDEBAR -> {
                 applyColors(132, 241, 210, 18, 22, 28, 31, 38, 46, 88, 106, 109);
             }
-            case APEX_WORKSPACE -> {
-                applyColors(41, 236, 150, 12, 16, 20, 20, 26, 30, 46, 91, 70);
-            }
+            case APEX_WORKSPACE -> { applyColors(41,236,150,12,16,20,20,26,30,46,91,70); }
+            case HORIZON_SPLIT -> { applyColors(244,177,89,25,24,25,44,38,36,116,91,63); }
+            case ATLAS_PANELS -> { applyColors(74,203,255,13,23,36,25,42,61,60,99,140); }
+            case PRISM_STUDIO -> { applyColors(202,144,255,27,22,42,42,33,63,104,79,139); }
         }
     }
 
@@ -196,7 +223,9 @@ public final class ReskinTheme extends MeteorGuiTheme {
 
     @Override public void beforeRender() {
         super.beforeRender();
+        if(cornerRadius.get()>4)cornerRadius.set(0); // Migrate the rejected legacy radius, retaining custom colors.
         backgroundColor.get().set(surfaceColor.get());
+        placeholderColor.get().set(textSecondaryColor.get());
         outlineColor.get().set(borderColor.get());
         checkboxColor.get().set(accentColor.get());
         sliderHandle.get().set(accentColor.get());

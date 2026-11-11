@@ -10,15 +10,21 @@ import meteordevelopment.meteorclient.gui.utils.Cell;
 import meteordevelopment.meteorclient.utils.Utils;
 import net.minecraft.client.input.MouseButtonEvent;
 
-/** Two-axis viewport for native settings. Scrollbars occupy their own area, never cover inputs. */
+/** Native-layout viewport by default; explicit vertical-only mode for Reskin-owned settings. */
 public final class ReskinView extends WView {
     public double externallyConstrainedMaxHeight=-1,externallyConstrainedMaxWidth=-1;
+    // Preserve third-party/native widget geometry by default. Only the Reskin
+    // inspector opts into constraint reflow; a theme must not rewrite arbitrary
+    // addon tables, column alignment, or custom control internals.
+    public boolean verticalOnly=false;
     private double totalWidth,totalHeight,sx,sy,innerW,innerH;
     private double mx,my,dragStart,scrollStart;
     private boolean horizontal,vertical,dragX,dragY;
     private WWidget lastFocus;
     @Override public void init(){maxHeight=Utils.getWindowHeight();}
     @Override protected void onCalculateSize(){
+        double budget=externallyConstrainedMaxWidth<0?Math.max(1,Utils.getWindowWidth()-((ReskinTheme)theme).sideInset()-theme.scale(40)):externallyConstrainedMaxWidth;
+        if(verticalOnly)for(Cell<?> c:cells)if(c.widget().visible)ReskinReflow.measure(c.widget(),Math.max(1,budget-theme.scale(14)-c.padLeft()-c.padRight()));
         totalWidth=0;totalHeight=0;int n=0;
         for(Cell<?> c:cells){if(!c.widget().visible)continue;
             totalWidth=Math.max(totalWidth,c.padLeft()+c.widget().width+c.padRight());
@@ -28,25 +34,29 @@ public final class ReskinView extends WView {
         double safeW=Math.max(1,Utils.getWindowWidth()-((ReskinTheme)theme).sideInset()-theme.scale(40));
         double capH=externallyConstrainedMaxHeight<0?Math.min(maxHeight,safeH):Math.min(safeH,externallyConstrainedMaxHeight);
         double capW=externallyConstrainedMaxWidth<0?safeW:Math.min(safeW,externallyConstrainedMaxWidth);
-        horizontal=totalWidth>capW;vertical=totalHeight>Math.max(1,capH-(horizontal?theme.scale(18):0));
+        horizontal=!verticalOnly&&totalWidth>capW;vertical=totalHeight>Math.max(1,capH-(horizontal?theme.scale(18):0));
         width=Math.max(1,Math.min(capW,totalWidth+(vertical?theme.scale(12):0)));
         height=Math.max(1,Math.min(capH,totalHeight+(horizontal?theme.scale(18):0)));
         area();
     }
     private void area(){
         double track=theme.scale(12);
-        horizontal=totalWidth>width-(vertical?track:0)+.5;
+        horizontal=!verticalOnly&&totalWidth>width-(vertical?track:0)+.5;
         vertical=totalHeight>height-(horizontal?theme.scale(18):0)+.5;
         innerW=Math.max(1,width-(vertical?track:0));innerH=Math.max(1,height-(horizontal?theme.scale(18):0));
-        horizontal=totalWidth>innerW+.5;
+        horizontal=!verticalOnly&&totalWidth>innerW+.5;
+        if(verticalOnly)sx=0;
         sx=Math.max(0,Math.min(sx,Math.max(0,totalWidth-innerW)));sy=Math.max(0,Math.min(sy,Math.max(0,totalHeight-innerH)));
+    }
+    @Override public void calculateWidgetPositions(){
+        x=Math.round(x);y=Math.round(y);onCalculateWidgetPositions();
     }
     @Override protected void onCalculateWidgetPositions(){
         area();double yy=y-sy;int n=0;
-        double rowW=Math.max(innerW,totalWidth);
+        double rowW=verticalOnly?innerW:Math.max(innerW,totalWidth);
         for(Cell<?> c:cells){if(!c.widget().visible)continue;
             if(n++>0)yy+=spacing();yy+=c.padTop();
-            c.x=x+c.padLeft()-sx;c.y=yy;c.width=Math.max(1,rowW-c.padLeft()-c.padRight());c.height=c.widget().height;c.alignWidget();
+            c.x=x+c.padLeft()-sx;c.y=yy;c.width=Math.max(1,rowW-c.padLeft()-c.padRight());c.height=c.widget().height;if(verticalOnly)ReskinReflow.place(c.widget(),c.x,c.y,c.width);else { c.alignWidget(); c.widget().calculateWidgetPositions(); }
             yy+=c.widget().height+c.padBottom();
         }
     }

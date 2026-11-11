@@ -9,13 +9,13 @@ public final class ReskinButton extends WMeteorButton {
     public ReskinButton(String text, GuiTexture icon) { super(text,icon); }
     @Override protected void onCalculateSize() {
         super.onCalculateSize();
-        width = Math.min(width, Math.max(theme.scale(80), ((ReskinTheme)theme).logicalWidth()*0.45));
+        width = Math.min(Math.ceil(width)+2, Math.max(theme.scale(80), ((ReskinTheme)theme).logicalWidth()*0.45));
         height = Math.max(height, theme.scale(28));
     }
     @Override protected void onRender(GuiRenderer r, double mx, double my, double delta) {
         ReskinTheme t=(ReskinTheme)theme;
         ReskinDraw.panel(r,t,x,y,width,height,mouseOver||pressed);
-        if(pressed)ReskinDraw.round(r,x+1,y+1,width-2,height-2,t.scale(6),t.headerSurfaceColor.get());
+        if(pressed)ReskinDraw.round(r,x+1,y+1,width-2,height-2,t.scale(Math.min(4,t.cornerRadius.get())),t.headerSurfaceColor.get());
         double pad=t.scale(6);
         if (texture != null) {
             double s=Math.max(3,height-pad*2);
