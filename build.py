@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+"""Build Meteor Reskin from the supplied Meteor 26.3-17 artifact. Never package dependency stubs."""
+from __future__ import annotations
+import argparse, hashlib, json, os, re, shutil, subprocess, sys
+from pathlib import Path
+from zipfile import ZipFile, ZIP_DEFLATED, ZipInfo
+ROOT=Path(__file__).resolve().parent
+
+def java_major(executable: str) -> int:
+    p=subprocess.run([executable,'-version'],text=True,capture_output=True,check=True)
+    m=re.search(r'(?:javac\s+|version\s+")(\d+)',p.stdout+'\n'+p.stderr)
+    if not m: raise RuntimeError('Could not determine Java version')
+    return int(m.group(1))
+
+def compatibility_view(source: Path, dest: Path) -> Path:
+    """Offline tooling only: change class-version headers, never production dependencies."""
+    dest.parent.mkdir(parents=True,exist_ok=True)
+    with ZipFile(source) as src, ZipFile(dest,'w',ZIP_DEFLATED) as out:
+        for info in src.infolist():
+            data=src.read(info)
+            if info.filename.endswith('.class') and data[:4]==b'\xca\xfe\xba\xbe':
+                data=data[:6]+(65).to_bytes(2,'big')+data[8:]
+            out.writestr(info,data)
+    return dest
+
+def main() -> None:
+    p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--meteor',required=True,type=Path)
+    p.add_argument('--minecraft',type=Path,help='Optional mapped Minecraft client jar; replaces compile-only headers')
+    p.add_argument('--offline-java21-api-view',action='store_true',help='Explicitly allow JDK 21 API-header adaptation; NOT a Java 25 game test')
+    args=p.parse_args()
+    args.meteor=args.meteor.resolve()
+    if not args.meteor.is_file(): p.error('Meteor jar does not exist')
+    with ZipFile(args.meteor) as z:
+        metadata=json.loads(z.read('fabric.mod.json'))
+        if metadata.get('id')!='meteor-client' or metadata.get('version')!='26.3-17':
+            p.error('Use the exact meteor-client-26.3-17.jar')
+    javac=shutil.which('javac')
+    if not javac: p.error('No javac found; install JDK 25')
+    version=java_major(javac)
+    if version<25 and not (version==21 and args.offline_java21_api_view):
+        p.error('JDK 25 required. JDK 21 tooling adapter is opt-in and not a Minecraft runtime test.')
+    api=args.meteor
+    adapted=version==21
+    if adapted:
+        print('NOTICE: JDK 21 offline API view; dependency code is not shipped or claimed game-tested.',flush=True)
+        api=compatibility_view(api,ROOT/'build'/'meteor-api-view-java21.jar')
+    classes=ROOT/'build'/'classes'
+    if classes.exists(): shutil.rmtree(classes)
+    classes.mkdir(parents=True)
+    sources=sorted((ROOT/'src'/'main'/'java').rglob('*.java'))
+    cp=[str(api)]
+    if args.minecraft:
+        if not args.minecraft.is_file(): p.error('Minecraft jar does not exist')
+        cp.append(str(args.minecraft.resolve()))
+    else:
+        sources+=sorted((ROOT/'stubs').rglob('*.java'))
+    subprocess.run([javac,'--release','21','-encoding','UTF-8','-cp',os.pathsep.join(cp),'-d',str(classes),*[str(s) for s in sources]],check=True)
+    target=ROOT/'dist'/'meteor-reskin-26.3-17-1.1.0-beta.1.jar'
+    target.parent.mkdir(exist_ok=True)
+    with ZipFile(target,'w',ZIP_DEFLATED) as z:
+        entries=[(s,s.relative_to(classes).as_posix()) for s in sorted((classes/'io'/'github'/'cloudycity'/'meteorreskin').rglob('*.class'))]
+        entries += [(ROOT/'src'/'main'/'resources'/'fabric.mod.json','fabric.mod.json'),(ROOT/'LICENSE','LICENSE')]
+        for src,name in entries:
+            info=ZipInfo(name,date_time=(2026,11,11,0,0,0));info.compress_type=ZIP_DEFLATED
+            z.writestr(info,src.read_bytes())
+    report={'version':'1.1.0-beta.1','compiler_major':version,'bytecode_target':21,'offline_api_view':adapted,
+            'minecraft_compile_headers':args.minecraft is None,'meteor_sha256':hashlib.sha256(args.meteor.read_bytes()).hexdigest(),
+            'jar_sha256':hashlib.sha256(target.read_bytes()).hexdigest(),'full_game_test':False}
+    (ROOT/'build'/'build-info.json').write_text(json.dumps(report,indent=2)+'\n')
+    print(target)
+if __name__=='__main__':
+    try: main()
+    except (OSError,subprocess.CalledProcessError,RuntimeError) as e: sys.exit(str(e))

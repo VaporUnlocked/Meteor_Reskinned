@@ -1,0 +1,16 @@
+PASS production theme constructor and real Meteor setting builders
+PASS construction and render Obsidian Command
+PASS construction and render Neon Dock
+PASS construction and render Slate Sidebar
+PASS construction and render Apex Workspace
+PASS real Meteor Settings serialization roundtrip using in-memory NBT fixtures
+PASS layout matrix: 96 combinations; all four layouts, every Neon category page, appearance and shared panels
+PASS navigation: ten registered tabs including addon tab, appearance, panel toggles, four layouts at 854x480
+PASS interactions: selection vs toggle, native toggle once, favorites, setting search, empty search, clipping, wheel boundaries and empty registries
+PASS icons: supplied, absent, empty, failing, cached and Unicode category fallbacks
+PASS dropdown: sixty options, upward edge flip, full scroll reach and final value selection
+PASS native-content viewport: both axes, last control reachability, scrollbar isolation and focus reveal
+PASS tooltip: long unbroken identifiers, multiline text, bounded first placement and reduced motion
+PASS software preview rendering: four PNGs generated from production widget code with substitute fonts/drawing and fixture data
+PASS TOTAL CHECKS: 20530
+[Meteor Reskin] Category icon unavailable for Broken addon; using initials (IllegalStateException).

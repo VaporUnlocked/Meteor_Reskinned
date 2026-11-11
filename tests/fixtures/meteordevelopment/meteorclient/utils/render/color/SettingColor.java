@@ -1,0 +1,3 @@
+package meteordevelopment.meteorclient.utils.render.color;
+import net.minecraft.nbt.CompoundTag;
+public class SettingColor extends Color {public boolean rainbow;public SettingColor(){super();}public SettingColor(int r,int g,int b,int a){super(r,g,b,a);}public SettingColor(SettingColor c){super(c.r,c.g,c.b,c.a);rainbow=c.rainbow;}@Override public SettingColor set(Color c){super.set(c);return this;}public CompoundTag toTag(){var t=new CompoundTag();t.putInt("r",r);t.putInt("g",g);t.putInt("b",b);t.putInt("a",a);return t;}public SettingColor fromTag(CompoundTag t){set(t.getIntOr("r",r),t.getIntOr("g",g),t.getIntOr("b",b),t.getIntOr("a",a));return this;}}

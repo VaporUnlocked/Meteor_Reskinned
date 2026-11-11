@@ -1,0 +1,2 @@
+package meteordevelopment.meteorclient.utils;
+public class Utils {public static int width=1666,height=896;public static int getWindowWidth(){return width;}public static int getWindowHeight(){return height;}public static String nameToTitle(String s){StringBuilder b=new StringBuilder();for(String w:s.split("-")){if(b.length()>0)b.append(' ');b.append(w.isEmpty()?"":Character.toUpperCase(w.charAt(0))+w.substring(1));}return b.toString();}}

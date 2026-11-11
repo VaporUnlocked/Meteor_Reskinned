@@ -1,0 +1,3 @@
+package meteordevelopment.meteorclient.gui.widgets.input;
+import meteordevelopment.meteorclient.gui.widgets.WWidget;import meteordevelopment.meteorclient.gui.renderer.GuiRenderer;import meteordevelopment.meteorclient.utils.render.color.Color;
+public class WTextBox extends WWidget {public Runnable action;private String text;public WTextBox(String text){this.text=text;}public String get(){return text;}public void set(String v){text=v;}protected void onCalculateSize(){width=theme.scale(120);height=theme.scale(30);}protected void onRender(GuiRenderer r,double mx,double my,double dt){r.quad(x,y,width,height,new Color(12,18,23));r.text(text.isEmpty()?"Search or enter a value...":text,x+theme.scale(6),y+theme.scale(7),new Color(170,185,198),false);}}

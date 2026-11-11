@@ -1,0 +1,52 @@
+{
+  "meteor_and_addon_member_references_resolved": 810,
+  "compiled_addon_classes": 36,
+  "external_references_not_resolved_by_this_check": [
+    [
+      "[Lio/github/cloudycity/meteorreskin/ReskinTheme$StylePreset;",
+      "clone",
+      "()Ljava/lang/Object;"
+    ],
+    [
+      "com/mojang/blaze3d/platform/Window",
+      "getGuiScale",
+      "()I"
+    ],
+    [
+      "net/minecraft/client/Minecraft",
+      "getWindow",
+      "()Lcom/mojang/blaze3d/platform/Window;"
+    ],
+    [
+      "net/minecraft/client/gui/screens/Screen",
+      "tick",
+      "()V"
+    ],
+    [
+      "net/minecraft/client/input/MouseButtonEvent",
+      "button",
+      "()I"
+    ],
+    [
+      "net/minecraft/client/input/MouseButtonEvent",
+      "x",
+      "()D"
+    ],
+    [
+      "net/minecraft/client/input/MouseButtonEvent",
+      "y",
+      "()D"
+    ],
+    [
+      "net/minecraft/world/item/ItemStack",
+      "isEmpty",
+      "()Z"
+    ]
+  ],
+  "foreign_classes_in_jar": 0,
+  "headless": true,
+  "game_services_mocked": true,
+  "java_major": 21,
+  "java21_class_header_adapter": true,
+  "real_minecraft_runtime_test": false
+}

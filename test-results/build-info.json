@@ -1,0 +1,10 @@
+{
+  "version": "1.1.0-beta.1",
+  "compiler_major": 21,
+  "bytecode_target": 21,
+  "offline_api_view": true,
+  "minecraft_compile_headers": true,
+  "meteor_sha256": "9767e91e773ac5dfb27fdd29e5378e1ce41007dedd432db3a4223b3affb62e7f",
+  "jar_sha256": "5051ce5b71be48f24b715d59f1bbacf2b8042a46deb62b59cf1d4926cca79d59",
+  "full_game_test": false
+}

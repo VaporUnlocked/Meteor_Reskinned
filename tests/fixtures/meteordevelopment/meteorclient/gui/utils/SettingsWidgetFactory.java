@@ -1,0 +1,1 @@
+package meteordevelopment.meteorclient.gui.utils;import meteordevelopment.meteorclient.gui.*;import meteordevelopment.meteorclient.gui.widgets.WWidget;import meteordevelopment.meteorclient.settings.Settings;public abstract class SettingsWidgetFactory {public abstract WWidget create(GuiTheme t,Settings s,String filter);}

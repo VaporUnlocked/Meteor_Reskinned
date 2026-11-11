@@ -1,0 +1,1 @@
+package net.minecraft.nbt;import java.util.*;public class ListTag extends ArrayList<Tag> implements Tag {public CompoundTag getCompoundOrEmpty(int i){return get(i) instanceof CompoundTag c?c:new CompoundTag();}public Optional<CompoundTag> getCompound(int i){return get(i) instanceof CompoundTag c?Optional.of(c):Optional.empty();}}

@@ -1,0 +1,1 @@
+package meteordevelopment.meteorclient.systems.modules;import java.util.function.Supplier;import net.minecraft.world.item.ItemStack;public class Category {public final String name;public final Supplier<ItemStack> icon;public Category(String name){this(name,null);}public Category(String name,Supplier<ItemStack> icon){this.name=name;this.icon=icon;}}
